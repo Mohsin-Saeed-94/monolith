@@ -21,7 +21,6 @@ func (h *Handler) HandleDeleteReference(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, fmt.Sprintf("error deleting reference by id: %s, %#v\n", id, err), http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 }
 

@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-const BITLY_URL = "https://api-ssl.bitly.com/v4/shorten"
 const BITLY_DOMAIN = "bit.ly"
 
 type Client struct {
@@ -38,7 +37,7 @@ func (c *Client) GetShortUrl(longUrl string) string {
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
-	req, err := http.NewRequest("POST", BITLY_URL, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", os.Getenv("BITLY_URL"), bytes.NewBuffer(requestBody))
 	if err != nil {
 		c.logger.Printf("creating request error occurred: %#v", err)
 	}

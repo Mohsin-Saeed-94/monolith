@@ -21,7 +21,6 @@ func (h *Handler) HandleDeleteRoommate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("error deleting roommate by id: %s, %#v\n", id, err), http.StatusNotFound)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 }
 
