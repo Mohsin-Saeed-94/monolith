@@ -29,7 +29,7 @@ definitions:
       occupation:
         type: string
         x-go-name: Occupation
-      rentAfforsability:
+      rentAffordability:
         type: string
         x-go-name: RentAffordability
       userId:
@@ -43,7 +43,7 @@ definitions:
         type: string
         x-go-name: Message
     type: object
-    x-go-package: github.com/turnkeyca/monolith/user
+    x-go-package: github.com/turnkeyca/monolith/image
   PetDto:
     properties:
       breed:
@@ -320,6 +320,65 @@ paths:
           $ref: '#/responses/employmentErrorValidation'
       tags:
       - employment
+  /api/image:
+    put:
+      description: update a image
+      operationId: putImage
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          items:
+            format: uint8
+            type: integer
+          type: array
+      responses:
+        "200":
+          $ref: '#/responses/imageIdResponse'
+        "404":
+          $ref: '#/responses/imageErrorResponse'
+        "422":
+          $ref: '#/responses/imageErrorValidation'
+      tags:
+      - image
+  /api/image/{id}:
+    delete:
+      description: delete a image
+      operationId: deleteImage
+      parameters:
+      - description: The id of the image for which the operation relates
+        in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: Id
+      responses:
+        "201":
+          $ref: '#/responses/noContentResponse'
+        "404":
+          $ref: '#/responses/imageErrorResponse'
+        "500":
+          $ref: '#/responses/imageErrorResponse'
+      tags:
+      - image
+    get:
+      description: return a image
+      operationId: getImage
+      parameters:
+      - description: The id of the image for which the operation relates
+        in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: Id
+      responses:
+        "200":
+          $ref: '#/responses/imageResponse'
+        "404":
+          $ref: '#/responses/imageErrorResponse'
+      tags:
+      - image
   /api/pet:
     get:
       description: return all pets ofr a user
@@ -729,6 +788,19 @@ responses:
     schema:
       items:
         $ref: '#/definitions/EmploymentDto'
+      type: array
+  imageErrorResponse:
+    description: Generic error message returned as a string
+    schema:
+      $ref: '#/definitions/GenericError'
+  imageIdResponse:
+    description: ""
+  imageResponse:
+    description: A image
+    schema:
+      items:
+        format: uint8
+        type: integer
       type: array
   noContentResponse:
     description: No content is returned by this API endpoint
