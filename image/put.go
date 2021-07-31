@@ -25,6 +25,7 @@ type ImageIdDto struct {
 func (h *Handler) HandlePutImage(w http.ResponseWriter, r *http.Request) {
 	i := r.Context().Value(KeyBody{}).(*image.Image)
 	id := uuid.New().String()
+	h.logger.Printf("id: %s", id)
 	err := h.client.PutImage(id, i)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error putting image: %#v\n", err), http.StatusInternalServerError)

@@ -24,7 +24,8 @@ type GenericError struct {
 	Message string `json:"message"`
 }
 
-func ConfigureImageRoutes(router *mux.Router, logger *log.Logger, client *Client, authenticator *auth.Authenticator) {
+func ConfigureImageRoutes(router *mux.Router, logger *log.Logger, authenticator *auth.Authenticator) {
+	client := NewClient(logger)
 	imageHandler := NewHandler(logger, client)
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/api/image/{id:%s}", imageHandler.HandleGetImage)

@@ -25,7 +25,7 @@ func (c *Client) GetImage(imageId string) (*image.Image, error) {
 		var i image.Image
 		return &i, nil
 	}
-	client, err := minio.New(os.Getenv("SPACES_URL"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
+	client, err := minio.New(os.Getenv("SPACES_DOMAIN"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
 	if err != nil {
 		return nil, err
 	}
@@ -45,19 +45,25 @@ func (c *Client) PutImage(imageId string, i *image.Image) error {
 	if os.Getenv("TEST") == "true" {
 		return nil
 	}
-	client, err := minio.New(os.Getenv("SPACES_URL"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
+	c.logger.Println("creating client")
+	client, err := minio.New(os.Getenv("SPACES_DOMAIN"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
 	if err != nil {
 		return err
 	}
+	c.logger.Println("created client")
+	c.logger.Println("creating buffer")
 	buffer := new(bytes.Buffer)
 	err = png.Encode(buffer, *i)
 	if err != nil {
 		return err
 	}
+	c.logger.Println("created buffer")
+	c.logger.Println("putting image")
 	_, err = client.PutObject(os.Getenv("SPACES_BUCKET_NAME"), imageId, buffer, -1, minio.PutObjectOptions{ContentType: "image/png"})
 	if err != nil {
 		return err
 	}
+	c.logger.Println("put image")
 	return nil
 }
 
@@ -65,7 +71,7 @@ func (c *Client) DeleteImage(imageId string) error {
 	if os.Getenv("TEST") == "true" {
 		return nil
 	}
-	client, err := minio.New(os.Getenv("SPACES_URL"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
+	client, err := minio.New(os.Getenv("SPACES_DOMAIN"), os.Getenv("SPACES_API_KEY"), os.Getenv("SPACES_SECRET"), true)
 	if err != nil {
 		return err
 	}
