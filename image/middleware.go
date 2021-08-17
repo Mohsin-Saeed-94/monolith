@@ -2,9 +2,11 @@ package image
 
 import (
 	"context"
+	"fmt"
 	"image"
-	"io"
 	"net/http"
+
+	_ "image/png"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -28,19 +30,23 @@ func (h *Handler) GetIdFromPath(next http.Handler) http.Handler {
 
 func (h *Handler) GetBody(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		d, err := read(r.Body)
+		err := r.ParseMultipartForm(32 << 20)
 		if err != nil {
-			h.logger.Printf("decoding error: %#v", err)
-			http.Error(w, "Error reading image", http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("error parsing multipart form %#v", err), http.StatusBadRequest)
 			return
 		}
-		ctx := context.WithValue(r.Context(), KeyBody{}, d)
+		file, _, err := r.FormFile("photo")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error parsing photo from form %#v", err), http.StatusBadRequest)
+			return
+		}
+		i, _, err := image.Decode(file)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error parsing photo %#v", err), http.StatusBadRequest)
+			return
+		}
+		ctx := context.WithValue(r.Context(), KeyBody{}, &i)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
-}
-
-func read(r io.Reader) (*image.Image, error) {
-	d, _, err := image.Decode(r)
-	return &d, err
 }
